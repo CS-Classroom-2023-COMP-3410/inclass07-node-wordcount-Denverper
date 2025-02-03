@@ -7,6 +7,9 @@
  */
 function readFileContent() {
     // TODO: Use the 'fs' module to synchronously read the content of 'declaration.txt' and return it.
+    const fs = require('fs');
+    const filePath = './declaration.txt';
+    return fs.readFileSync(filePath, 'utf8');
 }
 
 /**
@@ -19,7 +22,11 @@ function getWordCounts(content) {
     // Hint: Consider splitting the content into words and then tallying the counts.
     const wordCount = {};
     const words = content.split(/\W+/).filter(Boolean); // Splitting by non-word characters.
-
+    for (word of words) {
+        const lowerCaseWord = word.toLowerCase();
+        wordCount[lowerCaseWord] = (wordCount[lowerCaseWord] || 0) + 1;
+    }
+    return wordCount;
 }
 
 /**
@@ -34,6 +41,13 @@ function colorWord(word, count) {
     // - Words that occur once can be blue
     // - Words that occur between 2 and 5 times can be green
     // - Words that occur more than 5 times can be red
+    const chalk = require('chalk');
+    if (count === 1) {
+        return chalk.blue(word);
+    } else if (count >= 2 && count <= 5) { 
+        return chalk.green(word);
+    }
+    return chalk.red(word);
 }
 
 /**
@@ -46,7 +60,7 @@ function printColoredLines(content, wordCount) {
 
     for (const line of lines) {
         const coloredLine = line.split(/\W+/).map(word => {
-            // TODO: Color the word based on its frequency using the 'colorWord' function.
+            return colorWord(word, wordCount[word.toLowerCase()]);
         }).join(' ');
 
         console.log(coloredLine);
@@ -69,3 +83,10 @@ if (require.main === module) {
 
 // TODO: Export the functions for testing
 // Hint: You can use the 'module.exports' syntax.
+module.exports = {
+    readFileContent,
+    getWordCounts,
+    colorWord,
+    printColoredLines,
+    processFile
+};
